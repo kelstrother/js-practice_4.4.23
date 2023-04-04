@@ -6,23 +6,38 @@
 // document.querySelector('.guess').value = 10;
 // console.log(document.querySelector(".guess").value);
 // !    DEFINING THE SOLUTION TO THE GAME
-const secretNumber = Math.trunc(Math.random() * 20) + 1;
-document.querySelector(".number").textContent = secretNumber;
+let secretNumber = Math.trunc(Math.random() * 20) + 1;
+
 
 // !CREATE VARIABLE TO HOLD THE SCORE
 let score = 20;
-
+// !    HIGHSCORE VARIABLE
+let highScore = 0;
 //! ADD LISTENER TO CHECK BUTTON
 document.querySelector(".check").addEventListener("click", function () {
   //! CONVERTING THE RETURNED GUESS TO A NUMBER
   const guess = Number(document.querySelector(".guess").value);
+
+
   //! GAME LOGIC
   // !  IF THERE IS NO GUESS
   if (!guess) {
     document.querySelector(".message").textContent = "💩 You need to guess.";
+
+
     // !  IF THE GUESS IS CORRECT
   } else if (guess === secretNumber) {
     document.querySelector(".message").textContent = "🤙 Most Excellent Guess!";
+    document.querySelector(".number").textContent = secretNumber;
+
+    document.querySelector("body").style.background = "#60b347";
+    document.querySelector('.number').style.width = '30rem';
+
+    if (score > highScore) {
+      highScore = score;
+      document.querySelector('.highscore').textContent = highScore;
+    }
+
     // !  IF THE GUESS IS TOO HIGH
   } else if (guess > secretNumber) {
     if (score > 1) {
@@ -50,3 +65,24 @@ document.querySelector(".check").addEventListener("click", function () {
     }
   }
 });
+
+// !    RESET TO INITIAL VALUES WHEN CLICKING AGAIN BUTTON
+// MY WAY
+// const playAgain = document.querySelector('.again');
+// playAgain.addEventListener('click', function() {
+//   window.location.reload();
+// })
+
+// JONAS'S WAY
+document.querySelector('.again').addEventListener('click', function() {
+  score = 20;
+  secretNumber = Math.trunc(Math.random() * 20) + 1;
+  document.querySelector(".message").textContent = " Start guessing..."
+  document.querySelector(".score").textContent = score;
+  document.querySelector('.number').textContent = '?';
+  document.querySelector('.guess').value = '';
+  document.querySelector("body").style.background = "#222";
+  document.querySelector(".number").style.width = "15rem";
+})
+
+
