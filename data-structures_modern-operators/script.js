@@ -42,35 +42,37 @@ const restaurant = {
   },
 };
 
-restaurant.orderDelivery({
-  time: "10:30",
-  address: "Florida Ave, unit 712",
-  mainIndex: 2,
-  starterIndex: 2,
-});
+
+
+// restaurant.orderDelivery({
+//   time: "10:30",
+//   address: "Florida Ave, unit 712",
+//   mainIndex: 2,
+//   starterIndex: 2,
+// });
 
 // !    SPREAD OPERATOR
 // ? add to new values to the array
-const arr = [7, 8, 9];
-const longWayArr = [1, 2, arr[0], arr[1], arr[2]];
+// const arr = [7, 8, 9];
+// const longWayArr = [1, 2, arr[0], arr[1], arr[2]];
 
-const shortWayArr = [1, 2, ...arr];
-console.log(shortWayArr);
-console.log(...shortWayArr);
+// const shortWayArr = [1, 2, ...arr];
+// console.log(shortWayArr);
+// console.log(...shortWayArr);
 
-const newMenu = [...restaurant.mainMenu, "Gnocci", "Cheese"];
-console.log(newMenu);
+// const newMenu = [...restaurant.mainMenu, "Gnocci", "Cheese"];
+// console.log(newMenu);
 // ? COPY ARRAY
-const mainMenuCopy = [...restaurant.mainMenu];
+// const mainMenuCopy = [...restaurant.mainMenu];
 
 // ? JOINING ARRAYS
-const menu = [...restaurant.starterMenu, ...restaurant.mainMenu];
-console.log(menu);
+// const menu = [...restaurant.starterMenu, ...restaurant.mainMenu];
+// console.log(menu);
 
 // ?    ITERABLES ARE (ARRAYS, STRINGS, MAPS, SETS; {BUT NOT OBJECTS})
-const str = "Rachel";
-const letters = [...str, "", "S."];
-console.log(letters);
+// const str = "Rachel";
+// const letters = [...str, "", "S."];
+// console.log(letters);
 
 // const ingredients = [
 //   prompt("Let's make pasta! Ingredient 1?"),
@@ -82,8 +84,8 @@ console.log(letters);
 // restaurant.orderPasta(...ingredients);
 
 // ?    Objects and the spread operator
-const newRestaurant = {foundedIn: 1990, ...restaurant, founder: 'Guiseppe'}
-console.log(newRestaurant);
+// const newRestaurant = {foundedIn: 1990, ...restaurant, founder: 'Guiseppe'}
+// console.log(newRestaurant);
 
 // !    DESTRUCTURING OBJECTS
 // const { name, openingHours, categories } = restaurant;
