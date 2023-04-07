@@ -62,9 +62,10 @@ const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
 //!   DISPLAYING TRANSACTIONS
-const displayTransactions = function (transactions) {
+const displayTransactions = function (transactions, sort = false) {
   containerTransactions.innerHTML = "";
-  transactions.forEach(function (trans, i) {
+  const trans = sort ? transactions.slice().sort((a, b) => a - b) : transactions;
+  trans.forEach(function (trans, i) {
     const type = trans > 0 ? "deposit" : "withdrawal";
 
     const html = `
@@ -79,14 +80,12 @@ const displayTransactions = function (transactions) {
     containerTransactions.insertAdjacentHTML("afterbegin", html);
   });
 };
-// displayTransactions(account1.transactions);
 
 //!  CALC AND DISPLAY TOTAL BALANCE
 const calcDisplayBalance = (acct) => {
   acct.balance = acct.transactions.reduce((acct, trans) => acct + trans, 0);
   labelBalance.textContent = `${acct.balance} EUR`;
 };
-// calcDisplayBalance(account1.transactions);
 
 //!   CALCULATE AND DISPLAY SUMMARY
 const calcDisplaySummary = (account) => {
@@ -110,7 +109,6 @@ const calcDisplaySummary = (account) => {
     .reduce((acc, int) => acc + int, 0);
   labelSumInterest.textContent = `${interest} EUR`;
 };
-// calcDisplaySummary(account1.transactions);
 
 //!   CREATING AND ADDING USERNAME TO ACCOUNT OBJECT
 const createUsername = function (accts) {
@@ -131,7 +129,7 @@ const updateUI = function (acct) {
   calcDisplaySummary(acct);
 };
 
-//!                       EVENT HANDLERS                              
+//!                       EVENT HANDLERS
 let currentAccount;
 
 btnLogin.addEventListener("click", function (e) {
@@ -140,7 +138,6 @@ btnLogin.addEventListener("click", function (e) {
   currentAccount = accounts.find(
     (acct) => acct.username === inputLoginUsername.value
   );
-  console.log(currentAccount);
   // ? checking if the pin matches the current account's pin
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     // ?  display UI and welcome message
@@ -156,27 +153,7 @@ btnLogin.addEventListener("click", function (e) {
     updateUI(currentAccount);
   }
 });
-//!                 CLOSE ACCOUNT EVENT                       
-btnClose.addEventListener("click", function (e) {
-  e.preventDefault();
-  if (
-    inputCloseUsername.value === currentAccount.username &&
-    Number(inputClosePin.value) === currentAccount.pin
-    ) {
-    const index = accounts.findIndex(
-      (acct) => acct.username === currentAccount.username
-    );
-    //?   delete account
-    accounts.splice(index, 1);
-    //?   hide ui
-    containerApp.style.opacity = 0;
-  //  ?   clear inputs
-  inputCloseUsername.value = inputClosePin.value = "";
-  inputClosePin.blur();
-  //  ?   set welcome message to its default
-    labelWelcome.textContent = "Log in to get started";
-  }
-});
+
 //!                   TRANSFER FUNCTIONALITY
 //?       event listener when user submits transfer
 btnTransfer.addEventListener("click", function (e) {
@@ -202,10 +179,56 @@ btnTransfer.addEventListener("click", function (e) {
     receiverAcct.transactions.push(amount);
 
     updateUI(currentAccount);
-    // clearInputs(currentAccount);
   }
 });
-// const user = "Steven Thomas Williams"; // username stw
+
+//!                   REQUEST A LOAN FUNCTIONALITY
+btnLoan.addEventListener("click", function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (
+    //? checking that it is a positive amount
+    amount > 0 &&
+    //? checking that requested amount is at least 10% of largest deposit
+    currentAccount.transactions.some((trans) => trans >= amount * 0.1)
+  ) {
+    //? add loan to current account
+    currentAccount.transactions.push(amount);
+    //?     update ui  
+    updateUI(currentAccount);
+  }
+  inputLoanAmount.value = '';
+  inputLoanAmount.blur();
+});
+//!                 CLOSE ACCOUNT EVENT
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      (acct) => acct.username === currentAccount.username
+    );
+    //?   delete account
+    accounts.splice(index, 1);
+    //?   hide ui
+    containerApp.style.opacity = 0;
+    //  ?   clear inputs
+    inputCloseUsername.value = inputClosePin.value = "";
+    inputClosePin.blur();
+    //  ?   set welcome message to its default
+    labelWelcome.textContent = "Log in to get started";
+  }
+});
+
+//!           SORTING               
+let sorted = false;
+btnSort.addEventListener('click', function(e) {
+  e.preventDefault();
+  displayTransactions(currentAccount.transactions, !sorted)
+  sorted = !sorted;
+})
 
 /////////////////////////////////////////////////
 //!                        LECTURES
@@ -263,7 +286,7 @@ const transactions = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 //!       REDUCE ARRAY METHOD
 //? accumulator = sum of all previous el
-const balance = transactions.reduce((acc, cur) => acc + cur, 0);
+// const balance = transactions.reduce((acc, cur) => acc + cur, 0);
 
 //!   MAXIMUM VALUE OF ARRAY
 // const max = transactions.reduce((acc, trans) => {
@@ -288,3 +311,27 @@ const balance = transactions.reduce((acc, cur) => acc + cur, 0);
 // ?   .FIND RETURNS THE FIRST ELEMENT THAT MATCHES THE CONDITION
 // const account = accounts.find(acct => acct.owner === 'Jessica Davis');
 // console.log(account);
+
+//!                 EVERY ARRAY METHOD                    
+// console.log(transactions);
+// console.log(transactions.every((trans) => (trans = typeof Number)));
+
+//!                 FLAT & FLATMAP ARRAY METHODS                     
+// const accountTransactions = accounts.map(acct => acct.transactions)
+// console.log(accountTransactions);
+
+// const globalTransactions = accountTransactions.flat();
+// console.log(globalTransactions);
+
+// const globalBalance = globalTransactions.reduce((acct, trans) => acct + trans, 0)
+
+//?   chaining to get the same result 
+// const globalBalance = accounts.map(acct => acct.transactions)
+// .flat().reduce((acct, trans) => acct + trans, 0);
+// console.log(globalBalance);
+
+
+//?   chaining to get the same result w/ flatMap (flatMap only goes 1 level deep)
+const globalBalance = accounts.flatMap(acct => acct.transactions)
+.reduce((acct, trans) => acct + trans, 0);
+console.log(globalBalance);
