@@ -82,9 +82,9 @@ const displayTransactions = function (transactions) {
 // displayTransactions(account1.transactions);
 
 //!  CALC AND DISPLAY TOTAL BALANCE
-const calcDisplayBalance = (transactions) => {
-  const balance = transactions.reduce((acc, trans) => acc + trans, 0);
-  labelBalance.textContent = `${balance} EUR`;
+const calcDisplayBalance = (acct) => {
+  acct.balance = acct.transactions.reduce((acct, trans) => acct + trans, 0);
+  labelBalance.textContent = `${acct.balance} EUR`;
 };
 // calcDisplayBalance(account1.transactions);
 
@@ -124,7 +124,14 @@ const createUsername = function (accts) {
 };
 createUsername(accounts);
 
-//!     EVENT HANDLERS
+// ?  display all account info balance, summary & transactions
+const updateUI = function (acct) {
+  displayTransactions(acct.transactions);
+  calcDisplayBalance(acct);
+  calcDisplaySummary(acct);
+};
+
+//!                       EVENT HANDLERS                              
 let currentAccount;
 
 btnLogin.addEventListener("click", function (e) {
@@ -141,16 +148,63 @@ btnLogin.addEventListener("click", function (e) {
       currentAccount.owner.split(" ")[0]
     }`;
     containerApp.style.opacity = 100;
-    // ?  display all account info balance, summary & transactions
-    displayTransactions(currentAccount.transactions)
-    calcDisplayBalance(currentAccount.transactions)
-    calcDisplaySummary(currentAccount)
+
     // ?  clear input fields
-    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
+    //?   UPDATING THE UI
+    updateUI(currentAccount);
   }
 });
+//!                 CLOSE ACCOUNT EVENT                       
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+    ) {
+    const index = accounts.findIndex(
+      (acct) => acct.username === currentAccount.username
+    );
+    //?   delete account
+    accounts.splice(index, 1);
+    //?   hide ui
+    containerApp.style.opacity = 0;
+  //  ?   clear inputs
+  inputCloseUsername.value = inputClosePin.value = "";
+  inputClosePin.blur();
+  //  ?   set welcome message to its default
+    labelWelcome.textContent = "Log in to get started";
+  }
+});
+//!                   TRANSFER FUNCTIONALITY
+//?       event listener when user submits transfer
+btnTransfer.addEventListener("click", function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcct = accounts.find(
+    (acct) => acct.username === inputTransferTo.value
+  );
+  //?   CLEARING INPUT FIELDS
+  inputTransferTo.value = inputTransferAmount.value = "";
+  inputTransferAmount.blur();
+  if (
+    //?       checking that the transfer is a positive amount
+    amount > 0 &&
+    //?       checking if the receiver account exists
+    receiverAcct &&
+    //?       checking if the account has the funds for the transfer
+    currentAccount.balance >= amount &&
+    //?       checking that receiver account is not the same as the current account
+    receiverAcct?.username !== currentAccount.username
+  ) {
+    currentAccount.transactions.push(-amount);
+    receiverAcct.transactions.push(amount);
 
+    updateUI(currentAccount);
+    // clearInputs(currentAccount);
+  }
+});
 // const user = "Steven Thomas Williams"; // username stw
 
 /////////////////////////////////////////////////
